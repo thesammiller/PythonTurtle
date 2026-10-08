@@ -444,7 +444,8 @@ class Shell(editwindow.EditWindow):
         """Execute the user's PYTHONSTARTUP script if they have one."""
         if startupScript and os.path.isfile(startupScript):
             text = 'Startup script executed: ' + startupScript
-            self.push('print %r; execfile(%r)' % (text, startupScript))
+            self.push('print(%r); exec(open(%r).read())'
+                      % (text, startupScript))
             self.interp.startupScript = startupScript
         else:
             self.push('')
