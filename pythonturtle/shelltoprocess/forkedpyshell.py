@@ -1422,6 +1422,16 @@ Platform: %s""" % (
             self.write(command)
             self.processLine()
 
+    def setStyles(self, faces):
+        """
+        Configure styles, pinning the default text color to black.
+
+        EditWindow sets a white background but leaves the text color to
+        the system default, which is white in macOS dark mode.
+        """
+        self.StyleSetForeground(stc.STC_STYLE_DEFAULT, wx.BLACK)
+        editwindow.EditWindow.setStyles(self, faces)
+
     def wrap(self, wrap=True):
         """Sets whether text is word wrapped."""
         try:
