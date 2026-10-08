@@ -444,7 +444,8 @@ class Shell(editwindow.EditWindow):
         """Execute the user's PYTHONSTARTUP script if they have one."""
         if startupScript and os.path.isfile(startupScript):
             text = 'Startup script executed: ' + startupScript
-            self.push('print %r; execfile(%r)' % (text, startupScript))
+            self.push('print(%r); exec(open(%r).read())'
+                      % (text, startupScript))
             self.interp.startupScript = startupScript
         else:
             self.push('')
@@ -1421,6 +1422,16 @@ Platform: %s""" % (
             command = command.replace('\n', os.linesep + ps2)
             self.write(command)
             self.processLine()
+
+    def setStyles(self, faces):
+        """
+        Configure styles, pinning the default text color to black.
+
+        EditWindow sets a white background but leaves the text color to
+        the system default, which is white in macOS dark mode.
+        """
+        self.StyleSetForeground(stc.STC_STYLE_DEFAULT, wx.BLACK)
+        editwindow.EditWindow.setStyles(self, faces)
 
     def wrap(self, wrap=True):
         """Sets whether text is word wrapped."""

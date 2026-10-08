@@ -71,5 +71,5 @@ class Turtle:
         and pen_downity of the Turtle instance.
         """
         return wx.Pen(self.color,
-                      self.width,
+                      int(round(self.width)),
                       wx.SOLID if self.pen_down else wx.TRANSPARENT)

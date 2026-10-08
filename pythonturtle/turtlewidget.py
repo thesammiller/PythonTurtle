@@ -45,8 +45,8 @@ class TurtleWidget(wx.Panel):
         for turtle_report in turtle_reports:
             if turtle_report.pen_down is True:
                 dc.SetPen(turtle_report.give_pen())
-                dc.DrawLine(from_my_pos(self.turtle.pos),
-                            from_my_pos(turtle_report.pos))
+                dc.DrawLine(to_wx_point(from_my_pos(self.turtle.pos)),
+                            to_wx_point(from_my_pos(turtle_report.pos)))
             if turtle_report.clear is True:
                 brush = wx.Brush("black")
                 dc.SetBackground(brush)
@@ -61,7 +61,7 @@ class TurtleWidget(wx.Panel):
         widget_size = Vector(self.GetSize())
         top_left_corner = (-BITMAP_SIZE + widget_size) / 2.0
 
-        dc.DrawBitmap(self.bitmap, *top_left_corner)
+        dc.DrawBitmap(self.bitmap, to_wx_point(top_left_corner))
 
         # draw the turtle
         if self.turtle.visible:
@@ -98,12 +98,20 @@ class TurtleWidget(wx.Panel):
         self.Refresh()
 
 
+def to_wx_point(vector):
+    """
+    Convert a (possibly float) vector to an integer wx.Point, as required
+    by recent wxPython versions.
+    """
+    return wx.Point(*(int(round(coordinate)) for coordinate in vector))
+
+
 def draw_bitmap_to_dc_rotated(dc, bitmap, angle, point):
     """
     Rotate a bitmap and write it to the supplied device context.
     """
     img = bitmap.ConvertToImage()
-    img_centre = wx.Point(img.GetWidth() / 2.0, img.GetHeight() / 2.0)
+    img_centre = wx.Point(img.GetWidth() // 2, img.GetHeight() // 2)
     img = img.Rotate(angle, img_centre, interpolating=True)
     new_point = Vector(point) - Vector(img.GetSize()) / 2
-    dc.DrawBitmap(img.ConvertToBitmap(), new_point, useMask=True)
+    dc.DrawBitmap(img.ConvertToBitmap(), to_wx_point(new_point), useMask=True)
